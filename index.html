@@ -64,7 +64,8 @@
       border-radius: 6px;
       font-size: 16px;
       cursor: pointer;
-      display: none;
+      /* display: none; */
+      display: inline-block;
     }
 
     #installBtn:hover {
@@ -233,6 +234,35 @@ document.getElementById("installBtn").addEventListener("click", async () => {
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/sw.js");
 }
+</script>
+
+<script>
+let deferredPrompt;
+const installBtn = document.getElementById("installBtn");
+
+// Button always show
+installBtn.style.display = "inline-block";
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+});
+
+installBtn.addEventListener("click", async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+
+    const { outcome } = await deferredPrompt.userChoice;
+
+    if (outcome === "accepted") {
+      console.log("App Installed");
+    }
+
+    deferredPrompt = null;
+  } else {
+    alert("Install option not available yet.\nTry opening in Chrome mobile.");
+  }
+});
 </script>
 
 </body>
