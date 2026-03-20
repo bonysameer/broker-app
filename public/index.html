@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>BSB Services & Co.</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#764ba2">
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #f5f7fa;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: #1a1a2e;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .contact {
+      font-size: 14px;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      text-align: center;
+      padding: 80px 20px;
+    }
+
+    .hero h1 {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      font-size: 18px;
+      opacity: 0.9;
+    }
+
+    /* Button */
+    #installBtn {
+      margin-top: 20px;
+      padding: 12px 20px;
+      background: #25D366;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      /* display: none; */
+      display: inline-block;
+    }
+
+    #installBtn:hover {
+      background: #1ebe5d;
+    }
+
+    /* Form */
+    .form-section {
+      display: flex;
+      justify-content: center;
+      margin-top: -50px;
+    }
+
+    .form-box {
+      background: white;
+      padding: 30px;
+      width: 350px;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-family: 'Poppins';
+    }
+
+    button.submit-btn {
+      width: 100%;
+      padding: 12px;
+      background: #764ba2;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button.submit-btn:hover {
+      background: #5a3a7a;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 20px;
+      margin-top: 50px;
+      background: #1a1a2e;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Navbar -->
+<div class="navbar">
+  <div class="logo">BSB Services & Co.</div>
+  <div class="contact">📞 Contact: +918296491353</div>
+</div>
+
+<!-- Hero -->
+<div class="hero">
+  <h1>Connecting Buyers & Sellers Faster</h1>
+  <p>Poultry | Land | Local Services — Trusted Broker Network</p>
+
+  <!-- 🔥 Download Button -->
+  <button id="installBtn">📲 Download App</button>
+</div>
+
+<!-- Form -->
+<div class="form-section">
+  <div class="form-box">
+    <h2>Submit Your Requirement</h2>
+
+    <form id="form">
+      <input type="text" id="name" placeholder="Your Name" required>
+      <input type="text" id="phone" placeholder="Phone Number" required>
+
+      <select id="type">
+        <option value="buyer">I am Buyer</option>
+        <option value="seller">I am Seller</option>
+      </select>
+
+      <select id="category">
+        <option value="poultry">Poultry</option>
+        <option value="land">Land</option>
+        <option value="service">Service</option>
+      </select>
+
+      <textarea id="details" placeholder="Enter details..."></textarea>
+
+      <button type="submit" class="submit-btn">Submit Now</button>
+    </form>
+  </div>
+</div>
+
+<div style="text-align:center; margin-top:40px;">
+  <h2>Our Office</h2>
+  <p>
+    📍 Lumbai, Bandgaon, Dist. West Singhbhum, Jharkhand - 835216 <br>
+    Landmark: Near Bandgaon Police Station
+  </p>
+</div>
+
+
+<!-- Footer -->
+<div class="footer">
+  © 2026 BSB Services & Co. | All Rights Reserved
+</div>
+
+<!-- Form Submit -->
+<script>
+document.getElementById("form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const data = {
+    name: document.getElementById("name").value,
+    phone: document.getElementById("phone").value,
+    type: document.getElementById("type").value,
+    category: document.getElementById("category").value,
+    details: document.getElementById("details").value
+  };
+
+  await fetch("/api/leads/add", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(data)
+  });
+
+  alert("Your request submitted successfully!");
+});
+</script>
+
+<!-- 🔥 INSTALL APP SCRIPT -->
+<script>
+let deferredPrompt;
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById("installBtn").style.display = "inline-block";
+});
+
+document.getElementById("installBtn").addEventListener("click", async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+
+    const { outcome } = await deferredPrompt.userChoice;
+
+    if (outcome === "accepted") {
+      console.log("App Installed");
+    }
+
+    deferredPrompt = null;
+  } else {
+    alert("Install option not available. Please open in Chrome.");
+  }
+});
+</script>
+
+<!-- Service Worker -->
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js");
+}
+</script>
+
+<script>
+let deferredPrompt;
+const installBtn = document.getElementById("installBtn");
+
+// Button always show
+installBtn.style.display = "inline-block";
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+});
+
+installBtn.addEventListener("click", async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+
+    const { outcome } = await deferredPrompt.userChoice;
+
+    if (outcome === "accepted") {
+      console.log("App Installed");
+    }
+
+    deferredPrompt = null;
+  } else {
+    alert("Install option not available yet.\nTry opening in Chrome mobile.");
+  }
+});
+</script>
+
+</body>
+</html>
