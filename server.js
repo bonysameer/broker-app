@@ -5,6 +5,8 @@ const path = require("path");
 const http = require("http");
 const { Server } = require("socket.io");
 
+const PORT = process.env.PORT || 5000;
+
 const app = express();
 
 // Create server
@@ -17,7 +19,8 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB connect
-mongoose.connect("mongodb://127.0.0.1:27017/brokerDB")
+// mongoose.connect("mongodb://127.0.0.1:27017/brokerDB")
+ mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("MongoDB Connected"))
 .catch(err => console.log(err));
 
@@ -34,8 +37,8 @@ io.on("connection", (socket) => {
 });
 
 // Start server
-server.listen(5000, () => {
-  console.log("Server running on http://localhost:5000");
+server.listen(PORT, () => {
+  console.log("Server running");
 });
 
 
