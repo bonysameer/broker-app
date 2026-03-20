@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Broker Admin Dashboard</title>
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      margin: 0;
+      color: #333;
+    }
+
+    header {
+      background: #fff;
+      padding: 15px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: 600;
+      color: #764ba2;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    th {
+      background: #764ba2;
+      color: white;
+      padding: 12px;
+      font-size: 14px;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+
+    tr:hover {
+      background: #f5f5f5;
+    }
+
+    button {
+      background: #25D366;
+      color: white;
+      border: none;
+      padding: 7px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1ebe5d;
+    }
+
+    .badge {
+      padding: 4px 8px;
+      border-radius: 5px;
+      font-size: 12px;
+      color: white;
+    }
+
+    .buyer {
+      background: #28a745;
+    }
+
+    .seller {
+      background: #dc3545;
+    }
+
+    .new-row {
+      background: #fff3cd !important;
+      animation: fade 2s ease-in-out;
+    }
+
+    @keyframes fade {
+      from { background: yellow; }
+      to { background: #fff3cd; }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  📊 BSB Services & Co. - Admin Dashboard
+</header>
+
+<div class="container">
+
+<table id="leadTable">
+  <tr>
+    <th>Name</th>
+    <th>Phone</th>
+    <th>Type</th>
+    <th>Category</th>
+    <th>Details</th>
+    <th>Date</th>
+    <th>Action</th>
+  </tr>
+</table>
+
+</div>
+
+<!-- Load existing leads -->
+<script>
+async function loadLeads() {
+  const res = await fetch("/api/leads");
+  const data = await res.json();
+
+  const table = document.getElementById("leadTable");
+
+  data.forEach(lead => {
+    const row = table.insertRow();
+
+    row.insertCell(0).innerText = lead.name;
+    row.insertCell(1).innerText = lead.phone;
+
+    const typeCell = row.insertCell(2);
+    const badge = document.createElement("span");
+    badge.classList.add("badge");
+    badge.classList.add(lead.type === "buyer" ? "buyer" : "seller");
+    badge.innerText = lead.type;
+    typeCell.appendChild(badge);
+
+    row.insertCell(3).innerText = lead.category;
+    row.insertCell(4).innerText = lead.details;
+    row.insertCell(5).innerText = new Date(lead.createdAt).toLocaleString();
+
+    const btn = document.createElement("button");
+    btn.innerText = "WhatsApp";
+
+    btn.onclick = () => {
+      const msg = `Hello ${lead.name}, I saw your requirement for ${lead.category}. I can help you.`;
+      window.open(`https://wa.me/91${lead.phone}?text=${encodeURIComponent(msg)}`);
+    };
+
+    row.insertCell(6).appendChild(btn);
+  });
+}
+
+loadLeads();
+</script>
+
+<!-- 🔥 SOCKET.IO REAL-TIME -->
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+const socket = io();
+
+socket.on("newLead", (lead) => {
+
+  // 🔔 Alert
+  alert("🔥 New Lead Received!");
+
+  const table = document.getElementById("leadTable");
+
+  // Top pe add karo
+  const row = table.insertRow(1);
+  row.classList.add("new-row");
+
+  row.insertCell(0).innerText = lead.name;
+  row.insertCell(1).innerText = lead.phone;
+
+  const typeCell = row.insertCell(2);
+  const badge = document.createElement("span");
+  badge.classList.add("badge");
+  badge.classList.add(lead.type === "buyer" ? "buyer" : "seller");
+  badge.innerText = lead.type;
+  typeCell.appendChild(badge);
+
+  row.insertCell(3).innerText = lead.category;
+  row.insertCell(4).innerText = lead.details;
+  row.insertCell(5).innerText = new Date(lead.createdAt).toLocaleString();
+
+  const btn = document.createElement("button");
+  btn.innerText = "WhatsApp";
+
+  btn.onclick = () => {
+    const msg = `Hello ${lead.name}, I saw your requirement for ${lead.category}.`;
+    window.open(`https://wa.me/91${lead.phone}?text=${encodeURIComponent(msg)}`);
+  };
+
+  row.insertCell(6).appendChild(btn);
+});
+</script>
+
+</body>
+</html>
