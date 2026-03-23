@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
@@ -24,7 +25,7 @@ app.get("/", (req, res) => {
 // MongoDB
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("✅ MongoDB Connected"))
-.catch(err => console.log(err));
+.catch(err => console.log("❌ DB Error:", err));
 
 // 🔥 FIX: io pass karo
 const leadRoutes = require("./routes/leadRoutes")(io);
