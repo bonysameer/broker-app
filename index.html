@@ -192,7 +192,7 @@ document.getElementById("form").addEventListener("submit", async (e) => {
     details: document.getElementById("details").value
   };
 
-  await fetch("/api/leads/add", {
+  await fetch("/api/leads", {
     method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify(data)
